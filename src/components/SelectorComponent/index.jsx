@@ -5,29 +5,45 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-export default function SelectorComponent() {
-  const [age, setAge] = React.useState('');
+
+export default function SelectorComponent({ name, value }) {
+  const [selected, setSelected] = React.useState('');
+  // console.log(selected);
 
   const handleChange = (event) => {
-    setAge(event.target.value);
+    setSelected(event.target.value);
   };
 
   return (
     <Box sx={{ minWidth: 120 }}>
       <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Age</InputLabel>
+        <InputLabel id={`${name}-select-label`}>{name}</InputLabel>
         <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={age}
-          label="Age"
+          labelId={`${name}-select-label`}
+          id={`${name}-select`}
+          value={selected}
+          label={name}
           onChange={handleChange}
         >
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
+          {value?.length > 0 ? (
+            value.map((item, i) => {
+              const displayValue =
+                name.toLowerCase().includes('types')
+                  ? item.types || item
+                  : item.ratings || item;
+
+              return (
+                <MenuItem key={i} value={displayValue}>
+                  {displayValue}
+                </MenuItem>
+              );
+            })
+          ) : (
+            <MenuItem disabled>No options</MenuItem>
+          )}
         </Select>
       </FormControl>
     </Box>
   );
 }
+

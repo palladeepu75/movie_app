@@ -1,6 +1,15 @@
 import { styled, alpha } from "@mui/material/styles";
-import {AppBar, Box, Toolbar, Typography, InputBase, SearchIcon } from "@mui/material";
+import {AppBar, Box, Toolbar, Typography } from "@mui/material";
+import InputBase from '@mui/material/InputBase';
+import SearchIcon from '@mui/icons-material/Search';
 import SelectorComponent from "../SelectorComponent";
+import { useDispatch,useSelector} from "react-redux";
+import { setSearchValue, setTypes } from "../../slice/movieSlice";
+// import { getRecipeBySearch } from "../../api/movies";
+import {debounce} from 'lodash';
+import { useEffect } from "react";
+// import { getMovies } from "../../api/movies";
+
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -43,9 +52,34 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navbar() {
+
+  const dispatch=useDispatch();
+      //Debouncing ---> it is optimization teqnique
+      // Set a limit to call an value or api
+      //set a limit to no of times invoke a function
+      //instead of settimeout import lodash
+    const onSearchChange= debounce((e)=>{
+      // setTimeout(() => {
+      //      dispatch(setSearchValue(e.target.value))
+      //     //(only when we work with search params)
+      //     //  dispatch(getRecipeBySearch(e.target.value)) 
+      // }, 1500)
+      dispatch(setSearchValue(e.target.value))      
+    },500);
+    //  const {searchValue}=useSelector(state=>state.movies)
+    //  console.log(searchValue);
+  useEffect(()=>{
+      dispatch(setTypes())
+    },[])
+
+    const {types}=useSelector(state=>state.movies)
+    // console.log(types);
+
+    
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+    <Box sx={{ flexGrow: 1}}>
+      <AppBar position="fixed" sx={{padding:1}}>
         <Toolbar>
           <Typography
             variant="h6"
@@ -53,9 +87,9 @@ export default function Navbar() {
             component="div"
             sx={{ display: { xs: "none", sm: "block" } }}
           >
-            Movies App
+            Movie Recipes App
           </Typography>
-          <Search>
+          <Search onChange={onSearchChange}>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -66,8 +100,8 @@ export default function Navbar() {
           </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}></Box>
-          <SelectorComponent />
-          <SelectorComponent />
+          <SelectorComponent name='Types' value={types}/>
+          <SelectorComponent name='Ratings' value={[]}/>
         </Toolbar>
       </AppBar>
     </Box>
